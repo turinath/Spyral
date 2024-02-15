@@ -5,7 +5,7 @@ from ..core.hardware_id import hardware_id_from_array
 
 import numpy as np
 import h5py as h5
-from scipy.special import erf
+from math import erf
 from scipy.optimize import curve_fit
 from numba import njit
 
@@ -104,6 +104,33 @@ class GetEvent:
     def is_valid(self) -> bool:
         return self.name != INVALID_EVENT_NAME and self.number != INVALID_EVENT_NUMBER
 
+# Define fit function
+@njit
+def SkewedGaussian(x, A, sigma, alpha, shift):
+    """JIT-ed functional form for a skewed Gaussian which will be fitted in fix_sat_peaks.
+
+    Parameters
+    ----------
+    x: ndarray
+        x-data for the fit. In our case this is the time bucket range
+    A: float
+        Amplitude for the Gaussian
+    sigma: float
+        Standard deviation for the Gaussian
+    alpha: float
+        Amount of "skewed-ness" of the Gaussian
+    shift: float 
+        Centroid of the Gaussian
+    Returns
+    -------
+    ndarray
+        Values of the curve evaluated over the x-grid with the given parameters
+    """
+    return (
+        A
+        * np.exp(-((x - shift) ** 2) / 2 / sigma ** 2)
+        * (1 + np.array([erf(alpha * (x_i-shift) / sigma) for x_i in x]))
+    )
 
 # Function for fixing saturated peaks
 def fix_sat_peaks(
@@ -112,18 +139,27 @@ def fix_sat_peaks(
     sat_thresh: float,
     params: GetParameters,
 ):
+    """Method for fitting saturated traces
+
+    Parameters
+    ----------
+    raw_traces: ndarray
+        Array of traces without background removed
+    adj_traces: ndarray
+        Array of traces with background removed
+    sat_thresh: float
+        Saturation threshold. Signals above this are flagged as saturated
+    params: GetParameters     
+        GET parameters
+    Returns
+    -------
+    ndarray
+        Array of traces with background removed and saturated points that are refit.
+    """
     tb_grid = np.arange(512)
 
     # Find saturated points in each trace
     mask = [(trace_i.trace > sat_thresh) for trace_i in raw_traces]
-
-    # Define fit function
-    def SkewedGaussian(x, A, sigma, alpha, shift):
-        return (
-            A
-            * np.exp(-((x - shift) ** 2) / 2 / sigma)
-            * (1 + erf(alpha * (x - shift) / sigma))
-        )
 
     # Loop over all rows in mask
     for i in range(len(mask)):
@@ -143,7 +179,7 @@ def fix_sat_peaks(
                     tb_grid[~mask[i]],
                     adj_traces[i].trace[~mask[i]],
                     p0=guess,
-                    bounds=([0, 0.01, -np.inf, 0], [np.inf, np.inf, np.inf, 512]),
+                    bounds=([0, 0.01, -np.inf, 0], [np.inf, 512, np.inf, 512]),
                 )
             except RuntimeError:
                 return adj_traces
