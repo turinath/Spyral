@@ -89,6 +89,9 @@ def phase_cluster(
         cluster_event_group.attrs["ic_amplitude"] = cloud_data.attrs["ic_amplitude"]
         cluster_event_group.attrs["ic_centroid"] = cloud_data.attrs["ic_centroid"]
         cluster_event_group.attrs["ic_integral"] = cloud_data.attrs["ic_integral"]
+        cluster_event_group.attrs["ic_multiplicity"] = cloud_data.attrs[
+            "ic_multiplicity"
+        ]
         for cidx, cluster in enumerate(cleaned):
             local_group = cluster_event_group.create_group(f"cluster_{cidx}")
             local_group.attrs["label"] = cluster.label

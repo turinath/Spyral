@@ -52,6 +52,9 @@ class RunParameters:
         If true, data is run through the estimate phase
     do_solve: bool
         If true, data is run through the solve phase
+    is_legacy: bool
+        If true, data is considered AT-TPC legacy format,
+        before the introduction of the FRIBDAQ.
     """
 
     run_min: int = -1
@@ -61,6 +64,7 @@ class RunParameters:
     do_cluster: bool = False
     do_estimate: bool = False
     do_solve: bool = False
+    is_legacy: bool = False
 
 
 @dataclass
@@ -176,12 +180,12 @@ class ClusterParameters:
     big_event_cutoff: int
         the cutoff between big events and small events in units of points in the
         point cloud
-    min_size_big_event: int
-        min_cluster_size parameter in scikit-learn's HDBSCAN algorithm for events with more
-        points than `big_event_cutoff`. The minimum size of a cluster.
-    min_size_small_event: int
-        min_cluster_size parameter in scikit-learn's HDBSCAN algorithm for events with fewer
-        points than `big_event_cutoff`. The minimum size of a cluster.
+    min_size_scale_factor: int
+        Factor which is multiplied by the number of points in a point cloud to set
+        the min_cluster_size parameter in scikit-learn's HDBSCAN algorithm
+    min_size_lower_cutoff: int
+        min_cluster_size parameter in scikit-learn's HDBSCAN algorithm for events where n_points * min_size_scale_factor
+        are less than this value.
     circle_overlap_ratio: float
         minimum overlap ratio between two circles in the cluster joining algorithm
     fractional_charge_threshold: float
@@ -194,12 +198,11 @@ class ClusterParameters:
     min_cloud_size: int = 0
     smoothing_neighbor_distance: float = 0.0  # mm
     min_points: int = 0
-    big_event_cutoff: int = 0
-    min_size_big_event: int = 0
-    min_size_small_event: int = 0
+    min_size_scale_factor: float = 0.0
+    min_size_lower_cutoff: int = 0
     circle_overlap_ratio: float = 0.0
     fractional_charge_threshold: float = 0.0
-    n_neighbors_outiler_test: int = 0
+    n_neighbors_outlier_test: int = 0
 
 
 @dataclass
@@ -334,6 +337,7 @@ def deserialize_config(json_data: dict[Any, Any]) -> Config:
     config.run.do_cluster = run_params["phase_cluster"]
     config.run.do_estimate = run_params["phase_estimate"]
     config.run.do_solve = run_params["phase_solve"]
+    config.run.is_legacy = run_params["is_legacy"]
 
     det_params = json_data["Detector"]
     config.detector.magnetic_field = det_params["magnetic_field(T)"]
@@ -369,15 +373,14 @@ def deserialize_config(json_data: dict[Any, Any]) -> Config:
     config.cluster.smoothing_neighbor_distance = cluster_params[
         "smoothing_neighbor_distance(mm)"
     ]
-    config.cluster.big_event_cutoff = cluster_params["big_event_cutoff"]
-    config.cluster.min_size_big_event = cluster_params["minimum_size_big_event"]
-    config.cluster.min_size_small_event = cluster_params["minimum_size_small_event"]
+    config.cluster.min_size_scale_factor = cluster_params["minimum_size_scale_factor"]
+    config.cluster.min_size_lower_cutoff = cluster_params["minimum_size_lower_cutoff"]
     config.cluster.min_points = cluster_params["minimum_points"]
     config.cluster.circle_overlap_ratio = cluster_params["circle_overlap_ratio"]
     config.cluster.fractional_charge_threshold = cluster_params[
         "fractional_charge_threshold"
     ]
-    config.cluster.n_neighbors_outiler_test = cluster_params["n_neighbors_outlier_test"]
+    config.cluster.n_neighbors_outlier_test = cluster_params["n_neighbors_outlier_test"]
 
     est_params = json_data["Estimate"]
     config.estimate.min_total_trajectory_points = est_params[

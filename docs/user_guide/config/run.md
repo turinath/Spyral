@@ -11,7 +11,8 @@ The Run parameters control which data runs Spyral will analyze and what analysis
     "phase_pointcloud": false,
     "phase_cluster": false,
     "phase_estimate": false,
-    "phase_solve": false
+    "phase_solve": false,
+    "is_legacy": false
 },
 ```
 
@@ -46,3 +47,7 @@ Select whether or not to run the estimation phase, the third phase of the analys
 ## phase_solve
 
 Select whether or not to run the solving phase, the fourth and final phase of the analysis. Set to `true` to run or `false` to skip.
+
+## is_legacy
+
+Controls whether or not data is analyzed in legacy mode. Legacy data is defined as data which was taken before the separation of auxilary detectors like the IC from the GET data acquisition into the FRIB acquisition. In this mode it is assumed that any data in CoBo 10 is auxilary data.

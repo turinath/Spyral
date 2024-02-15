@@ -2,6 +2,7 @@ from .core.config import Config
 from .core.workspace import Workspace
 from .core.spy_log import init_spyral_logger_child, spyral_info, spyral_error
 from .phase_pointcloud import phase_pointcloud
+from .phase_pointcloud_legacy import phase_pointcloud_legacy
 from .phase_cluster import phase_cluster
 from .phase_estimate import phase_estimate
 from .phase_solve import phase_solve
@@ -40,9 +41,14 @@ def run_spyral(
 
         # Lock the processing behind a try so that execptions are handled gracefully
         try:
-            if config.run.do_pointcloud:
+            if config.run.do_pointcloud and not config.run.is_legacy:
                 spyral_info(__name__, "Running phase point cloud")
                 phase_pointcloud(
+                    idx, ws, pad_map, config.get, config.frib, config.detector, queue
+                )
+            elif config.run.do_pointcloud:
+                spyral_info(__name__, "Running phase point cloud with legacy extension")
+                phase_pointcloud_legacy(
                     idx, ws, pad_map, config.get, config.frib, config.detector, queue
                 )
 

@@ -210,8 +210,6 @@ def fit_model_interp(
             continue
 
         traj_xy = trajectory.interpolate(traj_data[:, 2])
-        if np.isnan(traj_xy[0, 0]):
-            return None
         if np.any(np.isnan(traj_xy[:, 0])):
             fit_params["brho"].value += fit_params["brho"].value * 0.1
         else:
@@ -287,9 +285,7 @@ def solve_physics_interp(
 
         traj_xy = trajectory.interpolate(traj_data[:, 2])
 
-        if np.isnan(traj_xy[0, 0]):
-            return
-        elif np.any(np.isnan(traj_xy[:, 0])):
+        if np.any(np.isnan(traj_xy[:, 0])):
             fit_params["brho"].value += fit_params["brho"].value * 0.01
         else:
             is_too_short = False

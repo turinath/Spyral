@@ -53,3 +53,7 @@ The maximum allowed ion chamber multiplicity for an event. In general, AT-TPC ex
 ## event_correct_ic_time
 
 Turn on/off the ion chamber time correction. Sometimes, the wrong beam triggers the event start in the AT-TPC. This can be corrected using the correlation between downstream silicon and the ion chamber. `true` turns the correction on, `false` turns the correction off. This is only available to FRIB data.
+
+## Important Note
+
+If the `is_legacy` switch is turned on in the Run parameters, the FRIB parameters are used to process the ion chamber, even though the ion chamber data is recorded through the GET acquisition. This allows for the setting of independent parameters for analyzing the IC. However some of the FRIB parameters are unused in this case. In particular, the `event_correct_ic_time` and `event_ic_multiplicity` are not used. Additionally, the baseline of the IC signal is analyzed using the GET `baseline_window_scale`.

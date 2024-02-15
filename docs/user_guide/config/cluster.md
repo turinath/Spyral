@@ -8,9 +8,8 @@ The Cluster parameters which control the clustering, joining, and outlier detect
     "min_cloud_size": 50,
     "smoothing_neighbor_distance(mm)": 10.0,
     "minimum_points": 3,
-    "big_event_cutoff": 300,
-    "minimum_size_big_event": 50,
-    "minimum_size_small_event": 10,
+    "minimum_size_scale_factor": 0.06,
+    "minimum_size_lower_cutoff": 10,
     "circle_overlap_ratio": 0.75,
     "fractional_charge_threshold": 0.75,
     "n_neighbors_outlier_test": 5
@@ -31,17 +30,13 @@ The neighborhood search radius in millimeters for the smoothing algorithm. Befor
 
 The minimum number of samples (points) in a neighborhood for a point to be a core point. This is a re-exposure of the `min_samples` parameter of [scikit-learn's HDBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.HDBSCAN.html#sklearn.cluster.HDBSCAN). See their documentation for more details. This parameter needs more testing with more datasets! Please report any interesting behavior!
 
-## big_event_cutoff
+## minimum_size_scale_factor
 
-This is the size cutoff in points which identifies big events and small events. Big events have more points than `big_event_cutoff` and small events have fewer points than `big_event_cutoff`. This controls which minimum cluster size is applied to the event.
+HDBSCAN requires a minimum size (the hyper parameter `min_cluster_size` in [scikit-learn's HDBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.HDBSCAN.html#sklearn.cluster.HDBSCAN)) in terms of samples for a group to be considered a valid cluster. AT-TPC point clouds vary dramatically in size, from tens of points to thousands. To handle this wide scale, we use a scale factor to determine the appropriate minimum size, where `min_cluster_size = minimum_size_scale_factor * n_cloud_points`. The default value was found through some testing, and may need serious adjustment to produce best results. Note that the scale factor should be *small*.
 
-## minimum_size_big_event
+## minimum_size_lower_cutoff
 
-The minimum number of samples (points) in a group for the group to be a valid cluster for big events (events with more points than `big_event_cutoff`). This is a re-exposure of the `min_cluster_size` parameter of [scikit-learn's HDBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.HDBSCAN.html#sklearn.cluster.HDBSCAN). See their documentation for more details. This parameter needs more testing with more datasets! Please report any interesting behavior!
-
-## minimum_size_small_event
-
-The minimum number of samples (points) in a group for the group to be a valid cluster for small events (events with fewer points than `big_event_cutoff`). This is a re-exposure of the `min_cluster_size` parameter of [scikit-learn's HDBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.HDBSCAN.html#sklearn.cluster.HDBSCAN). See their documentation for more details. This parameter needs more testing with more datasets! Please report any interesting behavior!
+As discussed in the above `minimum_size_scale_factor`, we need to scale the `min_cluster_size` parameter to the size of the point cloud. However, there must be a lower limit (i.e. you can't have a minimum cluster size of 0). This parameter sets the lower limit; that is any `min_cluster_size` calculated using the scale factor that is smaller than this cutoff is replaced with the cutoff value. As an example, if the cutoff is set to 10 and the calculated value is 50, the calculated value would be used. However, if the calculated value is 5, the cutoff would be used instead.
 
 ## circle_overlap_ratio
 

@@ -144,6 +144,7 @@ def phase_pointcloud(
         pc_dataset.attrs["ic_amplitude"] = -1.0
         pc_dataset.attrs["ic_integral"] = -1.0
         pc_dataset.attrs["ic_centroid"] = -1.0
+        pc_dataset.attrs["ic_multiplicity"] = -1.0
 
         # Now analyze FRIBDAQ data
         frib_data: h5.Dataset
@@ -172,6 +173,9 @@ def phase_pointcloud(
         pc_dataset.attrs["ic_amplitude"] = ic_peak.amplitude
         pc_dataset.attrs["ic_integral"] = ic_peak.integral
         pc_dataset.attrs["ic_centroid"] = ic_peak.centroid
+        pc_dataset.attrs["ic_multiplicity"] = (
+            1  # For legacy compat. Always one for modern data
+        )
 
         # Apply IC correction to time calibration, if on
         # and correction is less than the total length of the GET window in TB

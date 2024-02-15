@@ -83,17 +83,23 @@ The only other thing you'll need is some data to analyze!
 These are the packages Spyral needs to run. Here we've listed the big dependencies
 
 - [spyral-utils](https://github.com/gwm17/spyral-utils/) - This includes
-    - [matplotlib](https://matplotlib.org/)
-    - [scipy](https://scipy.org/)
-    - [numpy](https://numpy.org/)
-    - [polars](https://pola.rs)
-    - [pycatima](https://github.com/hrosiak/pycatima)
+  - [shapely](https://shapely.readthedocs.io/en/stable/manual.html)
+  - [scipy](https://scipy.org/)
+  - [numpy](https://numpy.org/)
+  - [polars](https://pola.rs)
+  - [pycatima](https://github.com/hrosiak/pycatima)
 - [scikit-learn](https://scikit-learn.org/stable/)
 - [click](https://click.palletsprojects.com/en/8.1.x/)
-- [filterpy](https://filterpy.readthedocs.io/en/latest/): Technically not required and not used, but...
+- [contourpy](https://contourpy.readthedocs.io/en/v1.2.0/)
 - [h5py](https://www.h5py.org/)
+- [ipywidgets](https://ipywidgets.readthedocs.io/en/stable/)
+- [ipympl](https://matplotlib.org/ipympl/)
+- [jupyterlab](https://jupyter.org/)
 - [lmfit](https://lmfit.github.io/lmfit-py/)
+- [matplotlib](https://matplotlib.org/)
+- [nbformat](https://nbformat.readthedocs.io/en/latest/)
 - [numba](https://numba.readthedocs.io/en/stable/)
+- [plotly](https://plotly.com/)
 - [rocket-fft](https://pypi.org/project/rocket-fft/)
 - [tqdm](https://github.com/tqdm/tqdm)
 

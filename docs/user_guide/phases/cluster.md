@@ -16,7 +16,7 @@ In some ways AT-TPC data doesn't fit very neatly into many of the clustering alg
 
 HDBSCAN is a modified DBSCAN algorithm; DBSCAN stands for Density-Based Spatial Clustering of Applications wth Noise, and is a powerful clustering algorithm for noisy data. It clusters points based on their density (closeness to neighbors), but it assumes a *global* density. This means that DBSCAN assumes all clusters have the same density of points. As we mentioned before, this is not so good for AT-TPC data which can change density quite a bit. HDBSCAN however does not have this limitation. HDBSCAN scans density values forming clusters over different densities; the way it does this is fairly involved and we direct you to the [scikit-learn docs](https://scikit-learn.org/stable/modules/clustering.html#hdbscan) for more details.
 
-We cluster on four features: the spatial coordinates (x, y, z) and the integrated charge. Charge is included as this allows us to reject cross talk noise more effectively. However, for some datasets, it may be necessary to turn off the charge feature, particularly if the charge is very noisy. HDBSCAN, as implemented in scikit-learn, is also very fast, which is great cause we have to do a lot of clustering!
+We cluster on four features: the spatial coordinates (x, y, z) and the charge amplitude. Charge is included as this allows us to reject cross talk noise more effectively. However, for some datasets, it may be necessary to turn off the charge feature, particularly if the charge is very noisy. HDBSCAN, as implemented in scikit-learn, is also very fast, which is great because we have to do a lot of clustering!
 
 However, this doesn't perfectly cluster our data right off the bat. HDBSCAN will make clusters over all the densities, but each density will get it's own cluster! This is not exactly what we want; we need to connect these pieces together to form the total trajectory.
 
@@ -26,7 +26,7 @@ The code for this is found in `spyral/core/clusterize.py` in the function `form_
 
 The core method of joining is relatively simple: each initial cluster is fit with a circle in the X-Y plane. If the circles overlap significantly they are taken to be from the same trajectory. The required amount of overlap is a [configuration](../config/cluster.md) parameter to be tuned for each experiment. A secondary joining parameter is the relative mean charge of the two clusters to be joined; the two clusters should have a similar mean charge otherwise they do not belong together. Again, the threshold is a tunable parameter in the configuration.
 
-Joining is repeated until no more clusters can be joined together. These clusters are then taken to represent the complete detected particle trajectories for that event.
+Joining is repeated until clusters can no longer be joined together. These clusters are then taken to represent the complete detected particle trajectories for that event.
 
 The code for this is found in `spyral/core/clusterize.py` in the functions `join_clusters` and `join_clusters_depth`.
 

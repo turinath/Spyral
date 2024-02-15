@@ -209,7 +209,7 @@ def equation_of_motion(
         1.0 / math.sqrt(1.0 - (speed / C) ** 2.0) - 1.0
     )  # MeV
     if kinetic_energy < KE_LIMIT:
-        return np.zeros(6)
+        return np.array([state[0], state[1], state[2], 0.0, 0.0, 0.0])
     mass_kg = ejectile.mass * MEV_2_KG
     charge_c = ejectile.Z * E_CHARGE
     qm = charge_c / mass_kg

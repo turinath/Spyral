@@ -72,6 +72,7 @@ nav:
     - trace:
       - About trace: api/trace/index.md
       - get_event: api/trace/get_event.md
+      - get_legacy_event: api/trace/get_legacy_event.md
       - get_trace: api/trace/get_trace.md
       - frib_event: api/trace/frib_event.md
       - frib_trace: api/trace/frib_trace.md

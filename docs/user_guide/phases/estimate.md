@@ -51,7 +51,7 @@ Be sure your Spyral virtualenv is active to run this.
 
 Some important notes about gate drawing
 
-Gates are drawn via plotly's Lasso Tool. Settings can be altered within the notebook to change file names and other properties. The format for a particle ID gate is the following in JSON:
+Gates are drawn using matplotlib. Settings can be altered within the notebook to change file names and other properties. The format for a particle ID gate is the following in JSON:
 
 ```json
 {

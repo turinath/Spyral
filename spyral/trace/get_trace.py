@@ -107,7 +107,7 @@ class GetTrace:
         """
         return self.hw_id.pad_id
 
-    def find_peaks(self, params: GetParameters):
+    def find_peaks(self, params: GetParameters, rel_height: float = 0.95):
         """Find the peaks in the trace data
 
         The goal is to determine the centroid location of a signal peak within a given pad trace. Use the find_peaks
@@ -117,6 +117,9 @@ class GetTrace:
         ----------
         params: GetParameters
             Configuration paramters controlling the GET signal analysis
+        rel_height: float
+            The relative height at which the left and right ips points are evaluated. Typically this is
+            not needed to be modified, but for some legacy data is necessary
         """
 
         if self.is_valid() == False:
@@ -128,8 +131,8 @@ class GetTrace:
             self.trace,
             distance=params.peak_separation,
             prominence=params.peak_prominence,
-            width=(0, params.peak_max_width),
-            rel_height=0.85,
+            width=(1.0, params.peak_max_width),
+            rel_height=rel_height,
         )
         for idx, p in enumerate(pks):
             peak = Peak()
