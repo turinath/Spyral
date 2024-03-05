@@ -27,20 +27,21 @@ def clamp(value: float | int, low: float | int, hi: float | int) -> float | int:
 
 # To use numba with a class we need to declare the types of all members of the class
 # and use the @jitclass decorator
-@jitclass(
-    [
-        ("x_min", float64),
-        ("x_max", float64),
-        ("x_bins", int32),
-        ("x_width", float64),
-        ("y_min", float64),
-        ("y_max", float64),
-        ("y_bins", int32),
-        ("y_width", float64),
-        ("values", float64[:, :, :]),
-        ("nan", boolean),
-    ]
-)
+bilinear_spec = [
+    ("x_min", float64),
+    ("x_max", float64),
+    ("x_bins", int32),
+    ("x_width", float64),
+    ("y_min", float64),
+    ("y_max", float64),
+    ("y_bins", int32),
+    ("y_width", float64),
+    ("values", float64[:, :, :]),
+    ("nan", boolean),
+]
+
+
+@jitclass(spec=bilinear_spec)
 class BilinearInterpolator:
     """A JIT-ed bilinear interpolation class
 

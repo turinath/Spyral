@@ -119,11 +119,12 @@ def phase_pointcloud_legacy(
         event = GetLegacyEvent(event_data, idx, get_params, ic_params)
 
         pc = PointCloud()
-        pc.load_cloud_from_get_event(event, pad_map, corrector)
+        pc.load_cloud_from_get_event(event, pad_map)
         pc.calibrate_z_position(
             detector_params.micromegas_time_bucket,
             detector_params.window_time_bucket,
             detector_params.detector_length,
+            corrector,
         )
 
         pc_dataset = cloud_group.create_dataset(

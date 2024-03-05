@@ -35,9 +35,38 @@ $$
     B\rho = \frac{B_{det} r_{circle}}{\sin(\theta_{polar})}
 $$
 
-where we divide by the sin of the polar angle as only the field perpendicular to the motion contributes to the cyclotron motion.
+where we divide by the sin of the polar angle as only the field perpendicular to the motion contributes to the cyclotron motion. Dividing by the polar angle gives the "total" B&rho;.
 
 Finally, we extract the stopping power (dE/dx) by adding the integrated charge along the trajectory and dividing by the total path length. In this way we have extracted all of the relevant physics parameters.
+
+## Output
+
+The output of the estimation phase is a set of dataframes saved to parquet files on a run-by-run basis in the `estimates` directory of the workspace. The following fields are available in the dataframes:
+
+- event: the event number associated with this data
+- cluster_index: the cluster index asscociated with this data
+- cluster_label: the cluster label associated with this data
+- ic_amplitude: the ion chamber charge amplitude for this event
+- ic_centroid: the ion chamber centroid (time) for this event
+- ic_integral: the ion chamber integrated charge for this event
+- ic_multiplicity: the ion chamber peak multiplicity for this event (only relevant for legacy data)
+- vertex_x: the estimated vertex x-coordinate (mm)
+- vertex_y: the estimated vertex y-coordinate (mm)
+- vertex_z: the estimated vertex z-coordinate (mm)
+- center_x: the estimated best-fit circle center x-coordinate (mm)
+- center_y: the estimated best-fit circle center y-coordinate (mm)
+- center_z: the estimated best-fit circle center z-coordinate (mm)
+- polar: the estimated trajectory polar angle (radians)
+- azimuthal: the estimated trajectory azimuthal angle (radians)
+- brho: the estimated trajectory total B&rho; (Tm)
+- dEdx: the estimated trajectory stopping power (average energy loss) (arb.)
+- dE: the total integrated charge sum over the length of the first arc (arb.)
+- arclength: the length of the first arc (mm)
+- direction: indicates the detected direction of the trajectory (forward or backward)
+- eloss: Summed integrated charge up to some cutoff (arb.) (Experimental, not used)
+- cutoff_index: Index in the cluster up to which the eloss was summed. (Experimental, not used)
+
+Units are given where relevant. Some values are experimental and not meant for use in final analysis.
 
 ## Plotting and Particle ID
 

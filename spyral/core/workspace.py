@@ -97,7 +97,7 @@ class Workspace:
         Clear the log directory path
     """
 
-    def __init__(self, params: WorkspaceParameters):
+    def __init__(self, params: WorkspaceParameters, is_legacy: bool = False):
         """Construct the workspace and make the directories
 
         Parameters
@@ -194,6 +194,7 @@ class Workspace:
             self.pad_time_path,
             self.pad_electronics_path,
             self.pad_scale_path,
+            is_legacy,
         )
 
     def get_trace_file_path(self, run_number: int) -> Path:

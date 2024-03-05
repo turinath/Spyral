@@ -4,7 +4,7 @@ from .config import ClusterParameters
 from ..geometry.circle import least_squares_circle
 
 import sklearn.cluster as skcluster
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import RobustScaler
 import numpy as np
 
 
@@ -184,11 +184,11 @@ def cleanup_clusters(
     list[Cluster]
         The cleaned clusters
     """
+    # Cluster must have more than two points to have outlier test applied
     return [
         convert_labeled_to_cluster(cluster, params)
         for cluster in clusters
-        if cluster.label != -1
-        and len(cluster.point_cloud.cloud) > params.n_neighbors_outlier_test
+        if cluster.label != -1 and len(cluster.point_cloud.cloud) > 2
     ]
 
 
@@ -223,23 +223,19 @@ def form_clusters(pc: PointCloud, params: ClusterParameters) -> list[LabeledClou
     min_size = int(params.min_size_scale_factor * n_points)
     if min_size < params.min_size_lower_cutoff:
         min_size = params.min_size_lower_cutoff
+
+    # Use spatial dimensions and integrated charge
+    cluster_data = np.empty(shape=(len(pc.cloud), 4))
+    cluster_data[:, :] = pc.cloud[:, :4]
+
+    # Unfiy feature ranges to their means and have standard variance (1)
+    cluster_data = RobustScaler().fit_transform(cluster_data)
+
     clusterizer = skcluster.HDBSCAN(
         min_cluster_size=min_size,
         min_samples=params.min_points,
         allow_single_cluster=True,
-    )
-
-    # Use spatial dimensions and integrated charge
-    cluster_data = np.empty(shape=(len(pc.cloud), 4))
-    cluster_data[:, :3] = pc.cloud[:, :3]
-    cluster_data[:, 3] = pc.cloud[:, 3]
-
-    # Unfiy feature ranges to their means and std deviations. StandardScaler calculates mean, and std for each feature
-    cluster_data[:, :3] = (
-        StandardScaler().fit(cluster_data[:, :3]).transform(cluster_data[:, :3])
-    )
-    cluster_data[:, 3] = (
-        MinMaxScaler().fit_transform(cluster_data[:, 3].reshape(-1, 1)).flatten()
+        cluster_selection_epsilon=params.cluster_selection_epsilon,
     )
 
     fitted_clusters = clusterizer.fit(cluster_data)
@@ -248,9 +244,9 @@ def form_clusters(pc: PointCloud, params: ClusterParameters) -> list[LabeledClou
     # Select out data into clusters
     clusters: list[LabeledCloud] = []
     for idx, label in enumerate(labels):
-        clusters.append(LabeledCloud(label, PointCloud()))
+        clusters.append(LabeledCloud(label, PointCloud(), np.empty(0)))
         mask = fitted_clusters.labels_ == label
         clusters[idx].point_cloud.cloud = pc.cloud[mask]
         clusters[idx].point_cloud.event_number = pc.event_number
-
+        clusters[idx].clustered_data = cluster_data[mask]
     return clusters

@@ -30,7 +30,7 @@ def run_spyral(
         A communication channel back to the parent process for monitoring progress
     """
 
-    ws = Workspace(config.workspace)
+    ws = Workspace(config.workspace, config.run.is_legacy)
     pad_map = ws.get_pad_map()
     nuclear_map = NuclearDataMap()
 
@@ -62,6 +62,6 @@ def run_spyral(
 
             if config.run.do_solve:
                 spyral_info(__name__, "Running phase solve")
-                phase_solve(idx, ws, config.solver, nuclear_map, queue)
+                phase_solve(idx, ws, config.solver, config.detector, nuclear_map, queue)
         except Exception as e:
             spyral_error(__name__, f"Exception while processing run {idx}: {e}")

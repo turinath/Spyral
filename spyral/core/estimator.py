@@ -1,13 +1,10 @@
 from .cluster import Cluster
 from .config import DetectorParameters, EstimateParameters
 from ..geometry.circle import generate_circle_points, least_squares_circle
-from .spy_log import spyral_warn
 
 import numpy as np
 import math
-from scipy.signal import argrelmax
 from scipy.stats import linregress
-from scipy.interpolate import CubicSpline
 from enum import Enum
 
 
@@ -191,7 +188,7 @@ def estimate_physics_pass(
     center[2] = vertex[2]
 
     # Toss tracks whose verticies are not close to the origin in x,y
-    if vertex_rho > estimate_params.max_distance_from_beam_axis:
+    if vertex_rho > detector_params.beam_region_radius:
         return (False, Direction.NONE)
 
     polar = math.atan(fit.slope)
@@ -210,9 +207,9 @@ def estimate_physics_pass(
     azimuthal = math.atan2(vertex[1] - center[1], vertex[0] - center[0])
     if azimuthal < 0:
         azimuthal += 2.0 * math.pi
-    azimuthal -= math.pi * 1.5
-    if azimuthal < 0:
-        azimuthal += 2.0 * math.pi
+    azimuthal += math.pi * 0.5
+    if azimuthal > math.pi * 2.0:
+        azimuthal -= 2.0 * math.pi
 
     brho = (
         detector_params.magnetic_field * radius * 0.001 / np.abs(math.sin(polar))

@@ -40,7 +40,8 @@ def collect_runs(ws: Workspace, run_min: int, run_max: int) -> dict[int, int]:
     run_max: int
         the last run, inclusive
 
-    ## Returns
+    Returns
+    -------
     dict[int, int]
         a dictionary where the keys are run numbers and the values are the size of the associated raw trace files. The
         dict is sorted descending on the size of the raw trace files.
@@ -70,7 +71,8 @@ def create_run_stacks(config: Config, n_stacks: int) -> list[list[int]]:
     n_stacks: int
         the number of stacks, should be equal to number of processors
 
-    ## Returns
+    Returns
+    -------
     list[list[int]]
     The stacks. Each stack is a list of ints, where each value is a run number for that stack to process.
     """

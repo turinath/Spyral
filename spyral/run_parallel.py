@@ -1,9 +1,9 @@
 from .core.config import Config
 from .core.workspace import Workspace
 from .core.track_generator import (
-    generate_tracks,
-    GeneratorParams,
-    check_tracks_need_generation,
+    generate_track_mesh,
+    MeshParameters,
+    check_mesh_needs_generation,
 )
 from .core.particle_id import load_particle_id
 from .correction import generate_electron_correction
@@ -63,17 +63,17 @@ def generate_shared_resources(config: Config):
         )
         if pid is None:
             print(
-                "Could not create interpolation scheme, particle ID does not have the correct format!"
+                "Could not create trajectory mesh, particle ID does not have the correct format!"
             )
             print("Particle ID is required for running the solver stage (phase 4).")
             raise Exception
         if not isinstance(target, GasTarget):
             print(
-                "Could not create interpolation scheme, target data does not have the correct format for a GasTarget!"
+                "Could not create trajectory mesh, target data does not have the correct format for a GasTarget!"
             )
             print("Gas Target is required for running the solver stage (phase 4).")
             raise Exception
-        gen_params = GeneratorParams(
+        mesh_params = MeshParameters(
             target,
             pid.nucleus,
             config.detector.magnetic_field,
@@ -87,10 +87,10 @@ def generate_shared_resources(config: Config):
             config.solver.interp_polar_bins,
         )
         track_path = ws.get_track_file_path(pid.nucleus, target)
-        do_gen = check_tracks_need_generation(track_path, gen_params)
+        do_gen = check_mesh_needs_generation(track_path, mesh_params)
         if do_gen:
-            print("Creating the interpolation scheme... This may take some time...")
-            generate_tracks(gen_params, track_path)
+            print("Creating the trajectory mesh... This may take some time...")
+            generate_track_mesh(mesh_params, track_path)
             print("Done.")
     print("Shared resources are ready.")
 
@@ -113,7 +113,6 @@ def run_spyral_parallel(config: Config, no_progress: bool = False):
 
     # Some data must be made and shared across processes through files.
     generate_shared_resources(config)
-
     n_processes = config.run.n_processes
 
     queues: list[SimpleQueue] = []

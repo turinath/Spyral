@@ -14,3 +14,4 @@ The `core` module contains a lot of code that is used throughout Spyral (as well
 - [spy_log](spy_log.md)
 - [track_generator](track_generator.md)
 - [workspace](workspace.md)
+- [legacy_beam_pads](legacy_beam_pads.md)

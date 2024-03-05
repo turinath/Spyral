@@ -62,6 +62,7 @@ class PadMap:
         time_correction_path: Path,
         electronics_path: Path,
         scale_path: Path,
+        is_legacy: bool = False,
     ):
         """Construct the PadMap
 
@@ -85,6 +86,11 @@ class PadMap:
         """
         self.map: dict[int, PadData] = {}
         self.elec_map: dict[int, int] = {}
+        self.beam_pads: list[int] = []
+        if is_legacy:
+            from .legacy_beam_pads import LEGACY_BEAM_PADS
+
+            self.beam_pads = LEGACY_BEAM_PADS
         self.load(
             geometry_path, gain_path, time_correction_path, electronics_path, scale_path
         )
@@ -195,3 +201,6 @@ class PadMap:
             return self.elec_map[generate_electronics_id(hardware)]
 
         return None
+
+    def is_beam_pad(self, pad_id: int) -> bool:
+        return pad_id in self.beam_pads

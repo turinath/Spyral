@@ -32,7 +32,7 @@ The code for this is found in `spyral/core/clusterize.py` in the functions `join
 
 ## Cleanup of the Final Clusters
 
-As a last stage, a final noise removal is applied to each cluster. The [Local Outlier Factor](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html#sklearn.neighbors.LocalOutlierFactor) is an outlier test which compares the distance to nearest neighbors (neighbor density) to determine outlier points. The number of neighbors to use is an exposed [configuration](../config/cluster.md) parameter.
+As a last stage, a final noise removal is applied to each cluster. The [Local Outlier Factor](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html#sklearn.neighbors.LocalOutlierFactor) is an outlier test which compares the distance to nearest neighbors (neighbor density) to determine outlier points. The number of neighbors is controlled using the [`outlier_scale_factor`](../config/cluster.md) parameter.
 
 The code for this is found in `spyral/core/cluster.py`.
 

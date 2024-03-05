@@ -47,7 +47,6 @@ def generate_electron_correction(
 
     rho_final: np.ndarray = np.zeros((n_chunks, chunk_size))
     misc_final: np.ndarray = np.zeros((n_chunks, chunk_size, 3))
-    t_final: np.ndarray = np.zeros((n_chunks, chunk_size))
     for chunk in range(n_chunks):
         for row in range(chunk_size):
             # Convert distances to mm
@@ -65,14 +64,16 @@ def generate_electron_correction(
                 chunk * chunk_size + row, 5
             ]  # time/z initial
 
+    # Correct the time for the midpoint and convert to mm
     for chunk in misc_final:
         mid_val = chunk[chunk_midpoint_index, 2]
         chunk[:, 2] -= mid_val
-
-    t_final *= params.detector_length / (
-        (params.window_time_bucket - params.micromegas_time_bucket)
-        * (1.0 / params.get_frequency * 1000.0)
-    )
+        chunk[:, 2] *= (
+            params.detector_length
+            / (params.window_time_bucket - params.micromegas_time_bucket)
+            * params.get_frequency
+            * 0.001
+        )
 
     interp = BilinearInterpolator(
         gz_min, gz_max, gz_bins, grho_min, grho_max, grho_bins, misc_final

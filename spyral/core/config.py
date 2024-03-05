@@ -186,13 +186,17 @@ class ClusterParameters:
     min_size_lower_cutoff: int
         min_cluster_size parameter in scikit-learn's HDBSCAN algorithm for events where n_points * min_size_scale_factor
         are less than this value.
+    cluster_selection_epsilon: float
+        cluster_selection_epsilon parameter in scikit-learn's HDBSCAN algorithm. Clusters less than this distance apart
+        are merged in the hierarchy
     circle_overlap_ratio: float
         minimum overlap ratio between two circles in the cluster joining algorithm
     fractional_charge_threshold: float
         The maximum allowed difference between two clusters mean charge (relative to the larger mean charge of the two)
         for them to be joined
-    n_neighbors_outlier_test: int
-        Number of neighbors to use in scikit-learn's LocalOutlierFactor test
+    outlier_scale_factor: float
+        Factor which is multiplied by the number of points in a trajectory to set the number of neighbors parameter
+        for scikit-learns LocalOutlierFactor test
     """
 
     min_cloud_size: int = 0
@@ -200,9 +204,10 @@ class ClusterParameters:
     min_points: int = 0
     min_size_scale_factor: float = 0.0
     min_size_lower_cutoff: int = 0
+    cluster_selection_epsilon: float = 0.0
     circle_overlap_ratio: float = 0.0
     fractional_charge_threshold: float = 0.0
-    n_neighbors_outlier_test: int = 0
+    outlier_scale_factor: float = 0.0
 
 
 @dataclass
@@ -213,12 +218,9 @@ class EstimateParameters:
     ----------
     min_total_trajectory_points: int
         minimum number of points in a cluster for the cluster to be considered a particle trajectory
-    max_distance_from_beam_axis: float
-        maximum distance from beam axis for a trajectory vertex to be considered valid
     """
 
     min_total_trajectory_points: int = 0
-    max_distance_from_beam_axis: float = 0.0  # mm
 
 
 @dataclass
@@ -376,18 +378,18 @@ def deserialize_config(json_data: dict[Any, Any]) -> Config:
     config.cluster.min_size_scale_factor = cluster_params["minimum_size_scale_factor"]
     config.cluster.min_size_lower_cutoff = cluster_params["minimum_size_lower_cutoff"]
     config.cluster.min_points = cluster_params["minimum_points"]
+    config.cluster.cluster_selection_epsilon = cluster_params[
+        "cluster_selection_epsilon"
+    ]
     config.cluster.circle_overlap_ratio = cluster_params["circle_overlap_ratio"]
     config.cluster.fractional_charge_threshold = cluster_params[
         "fractional_charge_threshold"
     ]
-    config.cluster.n_neighbors_outlier_test = cluster_params["n_neighbors_outlier_test"]
+    config.cluster.outlier_scale_factor = cluster_params["outlier_scale_factor"]
 
     est_params = json_data["Estimate"]
     config.estimate.min_total_trajectory_points = est_params[
         "mininum_total_trajectory_points"
-    ]
-    config.estimate.max_distance_from_beam_axis = est_params[
-        "maximum_distance_from_beam_axis"
     ]
 
     solver_params = json_data["Solver"]

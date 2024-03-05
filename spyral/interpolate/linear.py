@@ -5,9 +5,15 @@ from numba.experimental import jitclass
 
 # To use numba with a class we need to declare the types of all members of the class
 # and use the @jitclass decorator
-@jitclass(
-    [("x", float64[:]), ("y", float64[:, :]), ("x_min", float64), ("x_max", float64)]
-)
+linear_spec = [
+    ("x", float64[:]),
+    ("y", float64[:, :]),
+    ("x_min", float64),
+    ("x_max", float64),
+]
+
+
+@jitclass(spec=linear_spec)
 class LinearInterpolator:
     """Simple JIT-ed wrapper around numpy.interp for use with vector valued functions (i.e. f(x) -> [y,z])
 

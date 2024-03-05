@@ -48,7 +48,8 @@ def least_squares_circle(
     y: ndarray
         list of all y position coordinates to be fit
 
-    ## Returns
+    Returns
+    -------
     tuple[float, float, float, float]
         A four member tuple containing the center x-coordinate, the center y-coordinate, the radius, and the RMSE (in that order)
         These are NaN if the matrix is singular

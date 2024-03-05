@@ -134,7 +134,7 @@ def phase_pointcloud(
         event = GetEvent(event_data, idx, get_params)
 
         pc = PointCloud()
-        pc.load_cloud_from_get_event(event, pad_map, corrector)
+        pc.load_cloud_from_get_event(event, pad_map)
 
         pc_dataset = cloud_group.create_dataset(
             f"cloud_{pc.event_number}", shape=pc.cloud.shape, dtype=np.float64
@@ -155,6 +155,7 @@ def phase_pointcloud(
                 detector_params.micromegas_time_bucket,
                 detector_params.window_time_bucket,
                 detector_params.detector_length,
+                corrector,
             )
             pc_dataset[:] = pc.cloud
             continue
@@ -167,6 +168,7 @@ def phase_pointcloud(
                 detector_params.micromegas_time_bucket,
                 detector_params.window_time_bucket,
                 detector_params.detector_length,
+                corrector,
             )
             pc_dataset[:] = pc.cloud
             continue
@@ -185,6 +187,7 @@ def phase_pointcloud(
                 detector_params.micromegas_time_bucket,
                 detector_params.window_time_bucket,
                 detector_params.detector_length,
+                corrector,
                 ic_cor,
             )
         else:
@@ -192,6 +195,7 @@ def phase_pointcloud(
                 detector_params.micromegas_time_bucket,
                 detector_params.window_time_bucket,
                 detector_params.detector_length,
+                corrector,
             )
 
         pc_dataset[:] = pc.cloud
